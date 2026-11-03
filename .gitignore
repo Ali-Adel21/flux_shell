@@ -1,0 +1,17 @@
+# Python compiled bytecode
+__pycache__/
+*.py[cod]
+
+# Local virtual environments
+.venv/
+venv/
+env/
+
+# Local shell history or feedback logs
+.command_feedback
+
+# IDE / Editor specific files
+.idea/
+.vscode/
+*.swp
+*.swo
