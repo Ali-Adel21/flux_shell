@@ -3,11 +3,29 @@ import glob
 import readline
 from builtin import BUILTIN_CMDS
 
+
+def get_path_executables(text):
+    executables = set()
+    path_env = os.environ.get("PATH", "")
+    for directory in path_env.split(os.pathsep):
+        if os.path.isdir(directories):
+            try:
+                for filename in os.listdir(directory):
+                    if filename.startswith(text):
+                        full_path = os.path.join(directory, filename)
+                        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                            executables.add(filename)
+            except PermissionError:
+                continue
+    return list(executables)
+
 def shell_completer(text, state):
     line_buffer = readline.get_line_buffer()
 
     if " " not in line_buffer.lstrip():
-        matches = [cmd for cmd in BUILTIN_CMDS if cmd.startswith(text)]
+        builtin_matches = [cmd for cmd in BUILTIN_CMDS if cmd.startswith(text)]
+        path_matches = get_path_executables(text)
+        matches = sorted(list(set(builtin_matches + path_matches)))
     else:
         path_pattern = text + "*"
         matches = glob.glob(path_pattern)
