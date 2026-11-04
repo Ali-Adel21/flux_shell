@@ -1,23 +1,32 @@
 import os
 import glob
+import shlex
+import subprocess
 import readline
 from builtin import BUILTIN_CMDS, CUSTOM_COMPLETERS
 
+_PATH_EXECUTABLES_CACHE = None
 
 def get_path_executables(text):
-    executables = set()
-    path_env = os.environ.get("PATH", "")
-    for directory in path_env.split(os.pathsep):
-        if os.path.isdir(directories):
-            try:
-                for filename in os.listdir(directory):
-                    if filename.startswith(text):
-                        full_path = os.path.join(directory, filename)
-                        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-                            executables.add(filename)
-            except PermissionError:
-                continue
-    return list(executables)
+    global _PATH_EXECUTABLES_CACHE
+    if not text:
+        return []
+
+    if _PATH_EXECUTABLES_CACHE is None:
+        executables = set()
+        path_env = os.environ.get("PATH", "")
+        for directory in path_env.split(os.pathsep):
+            if os.path.isdir(directory):
+                try:
+                    for filename in os.listdir(directory):
+                        if filename.startswith(text):
+                            full_path = os.path.join(directory, filename)
+                            if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                                executables.add(filename)
+                except PermissionError:
+                    continue
+        _PATH_EXECUTABLES_CACHE = list(executables)
+    return [ex for ex in _PATH_EXECUTABLES_CACHE if ex.startswith(text)]
 
 def shell_completer(text, state):
     line_buffer = readline.get_line_buffer()

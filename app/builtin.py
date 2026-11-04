@@ -107,7 +107,7 @@ def _execute_builtin(cmd, args, output_file=sys.stdout, error_file=sys.stderr):
             for job in BACKGROUND_JOBS:
                 if job["id"] == target_id:
                     try:
-                        os.kill(job["pid"], 15)  #SIGTERM send termination signal to the process
+                        os.kill(job["pid"], 15)  #send termination signal to the process
                         print(f"Terminated job [{job['id']}] (PID {job['pid']})")
                         killed = True
                     except ProcessLookupError:
