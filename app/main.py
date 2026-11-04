@@ -5,10 +5,9 @@ import socket
 import shlex
 import atexit
 import readline
-
 from completer import setup_readline
 from builtin import BUILTIN_CMDS, handle_builtin 
-from executor import handle_external
+from executor import handle_external, reap_jobs
 
 def main():
     username = getpass.getuser()
@@ -24,6 +23,7 @@ def main():
     atexit.register(readline.write_history_file, history_file)
 
     while True:
+        reap_jobs()
         current_dir = os.path.basename(os.getcwd()) or "/"
         prompt = f"{GREEN}{username}@{hostname}{RESET}:{BLUE}{current_dir}{RESET}{WHITE} $ {RESET}"
         
