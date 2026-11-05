@@ -19,10 +19,9 @@ def get_path_executables(text):
             if os.path.isdir(directory):
                 try:
                     for filename in os.listdir(directory):
-                        if filename.startswith(text):
-                            full_path = os.path.join(directory, filename)
-                            if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-                                executables.add(filename)
+                        full_path = os.path.join(directory, filename)
+                        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                            executables.add(filename)
                 except PermissionError:
                     continue
         _PATH_EXECUTABLES_CACHE = list(executables)

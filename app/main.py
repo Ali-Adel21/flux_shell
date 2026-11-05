@@ -7,9 +7,13 @@ import atexit
 import readline
 from completer import setup_readline
 from builtin import BUILTIN_CMDS, handle_builtin 
-from executor import handle_external, reap_jobs
+from executor import handle_external
+from jobs import reap_jobs , BACKGROUND_JOBS
+from signals import setup_signals
+
 
 def main():
+    setup_signals()
     username = getpass.getuser()
     hostname = socket.gethostname()
 
@@ -29,8 +33,15 @@ def main():
         
         try:
             command = input(prompt)
-        except (KeyboardInterrupt, EOFError):
+        except KeyboardInterrupt:
             print()
+            continue
+        except EOFError:
+            print()
+            running_jobs = [j for j in BACKGROUND_JOBS if j["status"] == "Running"]
+            if running_jobs:
+                print("shell: you have running background jobs.")
+                continue
             break
 
         if not command.strip():

@@ -2,7 +2,7 @@ import os
 import sys
 from contextlib import redirect_stdout
 import readline
-from executor import reap_jobs, BACKGROUND_JOBS
+from jobs import reap_jobs, BACKGROUND_JOBS
 
 
 BUILTIN_CMDS = ["exit", "echo", "type", "pwd", "cd", "history", "complete", "jobs", "kill"]
