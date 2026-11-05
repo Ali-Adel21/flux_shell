@@ -51,6 +51,7 @@ def _execute_builtin(cmd, args, output_file=sys.stdout, error_file=sys.stderr):
     #Handle pwd
     elif cmd == "pwd":
         print(os.getcwd(), file=output_file)
+
     #handle cd
     elif cmd == "cd":
         if args:
@@ -63,11 +64,23 @@ def _execute_builtin(cmd, args, output_file=sys.stdout, error_file=sys.stderr):
                 print(f"cd: {args[0]}: Not a directory", file=error_file)
             except PermissionError:
                 print(f"cd: {args[0]}: Permission denied", file=error_file)
+
     #Handle history
     elif cmd == "history":
         history_length = readline.get_current_history_length()
-        for i in range(1, history_length + 1):
-            print(f"{i}  {readline.get_history_item(i)}", file=output_file)
+        all_items = [(i, readline.get_history_item(i)) for i in range(1, history_length + 1)]
+
+        if args:
+            if args[0] == "head" and len(args) > 1 and args[1].isdigit(): #Get history head
+                limit = int(args[1])
+                all_items = all_items[:limit]
+            elif args[0] == "tail" and len(args) > 1 and args[1].isdigit():#Get history tail
+                limit = int(args[1])
+                all_items = all_items[-limit:]
+
+        for idx, item in all_items:
+            print(f"{idx} {item}", file=output_file)
+
     #Handle complete
     elif cmd == "complete":
         if len(args) >= 3 and args[0] == "-C":

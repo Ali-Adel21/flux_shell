@@ -4,9 +4,11 @@ import shlex
 import subprocess
 import readline
 from builtin import BUILTIN_CMDS, CUSTOM_COMPLETERS
+import re
 
 _PATH_EXECUTABLES_CACHE = None
 
+#Scans the system PATH environment variable
 def get_path_executables(text):
     global _PATH_EXECUTABLES_CACHE
     if not text:
@@ -27,15 +29,24 @@ def get_path_executables(text):
         _PATH_EXECUTABLES_CACHE = list(executables)
     return [ex for ex in _PATH_EXECUTABLES_CACHE if ex.startswith(text)]
 
+def get_active_segment(line_buffer):
+    tokens = re.split(r'(?:\|\||&&|>>|2>>|[|;&><])', line_buffer)
+    if tokens:
+        return tokens[-1]
+    return line_buffer
+
+#Readline callback that provides context-aware tab completion for (builtins , system path , local files and etc)
 def shell_completer(text, state):
     line_buffer = readline.get_line_buffer()
 
-    try:
-        parts = shlex.split(line_buffer)
-    except ValueError:
-        parts = line_buffer.split()
+    active_segment = get_active_segment(line_buffer)
 
-    if " " not in line_buffer.lstrip():
+    try:
+        parts = shlex.split(active_segment)
+    except ValueError:
+        parts = active_segment.split()
+
+    if " " not in active_segment.lstrip():
         builtin_matches = [cmd for cmd in BUILTIN_CMDS if cmd.startswith(text)]
         path_matches = get_path_executables(text)
         matches = sorted(list(set(builtin_matches + path_matches)))
@@ -67,7 +78,7 @@ def shell_completer(text, state):
         return matches[state]
     else:
         return None
-
+#Initializes the readline subsystem, loads command history, and binds the tab completion engine and word delimiters
 def setup_readline(history_file):
     try:
         readline.read_history_file(history_file)

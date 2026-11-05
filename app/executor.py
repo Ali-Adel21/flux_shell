@@ -10,7 +10,11 @@ def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=No
         background = True
         args.pop()
         
-    executable_path = shutil.which(cmd)
+    if os.path.sep in cmd or os.path.altsep and os.path.altsep in cmd:
+        executable_path = cmd if os.path.isfile(cmd) and os.access(cmd, os.X_OK) else None
+    else:
+        executable_path = shutil.which(cmd)
+        
     if executable_path:
         stdout_target = None
         stderr_target = None

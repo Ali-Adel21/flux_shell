@@ -5,15 +5,18 @@ import socket
 import shlex
 import atexit
 import readline
-from completer import setup_readline
 from builtin import BUILTIN_CMDS, handle_builtin 
 from executor import handle_external
 from jobs import reap_jobs , BACKGROUND_JOBS
 from signals import setup_signals
+from history import save_history
+from pipe import pipeline
+from completer import setup_readline
 
 
 def main():
     setup_signals()
+    setup_readline(".shell_history")
     username = getpass.getuser()
     hostname = socket.gethostname()
 
@@ -22,9 +25,7 @@ def main():
     WHITE = "\001\033[1;37m\002"
     RESET = "\001\033[0m\002"
 
-    history_file = os.path.expanduser("~/.command_feedback")
-    setup_readline(history_file)
-    atexit.register(readline.write_history_file, history_file)
+    atexit.register(save_history)
 
     while True:
         reap_jobs()
@@ -46,6 +47,10 @@ def main():
 
         if not command.strip():
             continue
+
+        if "|" in command:
+            pipeline(command)
+            continue 
 
         parts = shlex.split(command)
         if not parts:
