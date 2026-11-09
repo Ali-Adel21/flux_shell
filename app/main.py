@@ -9,7 +9,7 @@ from builtin import BUILTIN_CMDS, handle_builtin
 from executor import handle_external, handle_assignment_if_present
 from jobs import reap_jobs , BACKGROUND_JOBS
 from signals import setup_signals
-from history import save_history
+from history import save_history, load_history
 from pipe import pipeline
 from completer import setup_readline
 from variables import expand_parameters
@@ -17,6 +17,7 @@ from variables import expand_parameters
 
 def main():
     setup_signals()
+    load_history()
     setup_readline(".shell_history")
     username = getpass.getuser()
     hostname = socket.gethostname()

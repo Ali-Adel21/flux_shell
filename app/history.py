@@ -1,15 +1,18 @@
 import os
 import readline
 
-history_file = os.path.expanduser("~/.command_feedback")
+history_file = os.path.expanduser("~/.shell_history")
 
-try:
-    readline.read_history_file(history_file)
-except FileNotFoundError:
-    pass
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        try:
+            readline.read_history_file(HISTORY_FILE)
+        except Exception as e:
+            pass
 
 def save_history():
-        try:
-            history_length = readline.get_current_history_length()
-        except FileNotFoundError:
-            readline.write_history_file(history_file)
+    try:
+        readline.set_history_length(100)
+        readline.write_history_file(HISTORY_FILE)
+    except Exception as e:
+        pass
