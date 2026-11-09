@@ -6,12 +6,13 @@ import shlex
 import atexit
 import readline
 from builtin import BUILTIN_CMDS, handle_builtin 
-from executor import handle_external
+from executor import handle_external, handle_assignment_if_present
 from jobs import reap_jobs , BACKGROUND_JOBS
 from signals import setup_signals
 from history import save_history
 from pipe import pipeline
 from completer import setup_readline
+from variables import expand_parameters
 
 
 def main():
@@ -46,6 +47,9 @@ def main():
             break
 
         if not command.strip():
+            continue
+
+        if handle_assignment_if_present(command):
             continue
 
         if "|" in command:
@@ -98,6 +102,12 @@ def main():
         parts = new_parts
         if not parts:
             continue
+
+        parts = [expand_parameters(p) for p in parts]
+        if redirect_stdout_file:
+            redirect_stdout_file = expand_parameters(redirect_stdout_file)
+        if redirect_stderr_file:
+            redirect_stderr_file = expand_parameters(redirect_stderr_file)
 
         cmd = parts[0]
         args = parts[1:]

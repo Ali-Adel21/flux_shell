@@ -3,15 +3,16 @@ import sys
 from contextlib import redirect_stdout
 import readline
 from jobs import reap_jobs, BACKGROUND_JOBS
+from variables import set_variable, get_variable, is_valid_var_name, shell_vars
 
 
-BUILTIN_CMDS = ["exit", "echo", "type", "pwd", "cd", "history", "complete", "jobs", "kill"]
+BUILTIN_CMDS = ["exit", "echo", "type", "pwd", "cd", "history", "complete", "jobs", "kill", "declare"]
 CUSTOM_COMPLETERS = {}
 
 def handle_builtin(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=None, stderr_mode="w"):
     out_file = open(stdout_file, stdout_mode) if stdout_file else sys.stdout
     err_file = open(stderr_file, stderr_mode) if stderr_file else sys.stderr
-    
+
     try:
         _execute_builtin(cmd, args, output_file=out_file, error_file=err_file)
     finally:
@@ -139,3 +140,28 @@ def _execute_builtin(cmd, args, output_file=sys.stdout, error_file=sys.stderr):
                 
         if not killed:
             print(f"kill: {target}: no such job or process")
+
+    elif cmd == "declare":
+        if not args:
+            for k, v in sorted(shell_vars.items()):
+                print(f"declare -- {k}={v}")
+            return
+        for arg in args:
+            if "=" in arg:
+                name, value = arg.split("=", 1)
+                name = name.strip()
+                value = value.strip()
+                if not is_valid_var_name(name):
+                    print(f"declare: not a valid identifier: {name}", file=sys.stderr)
+                    return 1
+                if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+                    value = value[1:-1]
+                set_variable(name, expand_parameters(value))
+            else:
+                val = get_variable(arg)
+                if arg in shell_vars or arg in os.environ:
+                    print(f"declare -- {arg}={val}")
+                else:
+                    print(f"declare: {arg}: not found", file=sys.stderr)
+                    return 1
+        return

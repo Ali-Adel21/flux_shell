@@ -1,7 +1,10 @@
 import shutil
 import subprocess
 import os
+import re
 from jobs import BACKGROUND_JOBS, get_next_job_id
+from variables import get_variable, set_variable, is_valid_var_name, expand_parameters
+from pipe import pipeline
 
 def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=None, stderr_mode="w"):
     background = False
@@ -58,3 +61,20 @@ def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=No
                 stderr_target.close()
     else:
         print(f"{cmd}: command not found")
+
+
+
+def handle_assignment_if_present(command_string: str) -> bool:
+    stripped = command_string.strip()
+    if "=" in stripped and not stripped.startswith("declare") and not stripped.startswith("export"):
+        parts = stripped.split("=", 1)
+        if len(parts) == 2:
+            name = parts[0].strip()
+            value = parts[1].strip()
+            if is_valid_var_name(name):
+                if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+                    value = value[1:-1]
+                set_variable(name, expand_parameters(value))
+                return True
+    return False
+

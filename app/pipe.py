@@ -2,6 +2,7 @@ import os
 import sys
 import shlex
 import shutil
+from variables import expand_parameters
 
 def pipeline(command_string):
     op_split = command_string.split("|")
@@ -16,23 +17,24 @@ def pipeline(command_string):
 
     pids= []
     for i, cmd_args in enumerate(pipeline_cmds):
+        expanded_args = [expand_parameters(arg) for arg in cmd_args]
 
         clean_args = []
         redirect_file = None
         redirect_mode = "w"
 
         j = 0
-        while j < len(cmd_args):
-            arg = cmd_args[j]
+        while j < len(expanded_args):
+            arg = expanded_args[j]
             if arg in [">", "1>"]:
-                if j + 1 < len(cmd_args):
-                    redirect_file = cmd_args[j + 1]
+                if j + 1 < len(expanded_args):
+                    redirect_file = expand_parameters(expanded_args[j + 1])
                     redirect_mode = "w"
                     j += 2
                     continue
             elif arg in [">>", "1>>"]:
-                if j + 1 < len(cmd_args):
-                    redirect_file = cmd_args[j + 1]
+                if j + 1 < len(expanded_args):
+                    redirect_file = expand_parameters(expanded_args[j + 1])
                     redirect_mode = "a"
                     j += 2
                     continue
