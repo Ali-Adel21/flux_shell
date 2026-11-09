@@ -2,7 +2,7 @@ import os
 import sys
 import shlex
 import shutil
-from variables import expand_parameters
+from .variables import expand_parameters
 
 def pipeline(command_string):
     op_split = command_string.split("|")

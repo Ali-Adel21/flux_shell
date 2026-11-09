@@ -8,10 +8,13 @@ venv/
 env/
 
 # Local shell history or feedback logs
-.command_feedback
+.shell_history
 
 # IDE / Editor specific files
 .idea/
 .vscode/
 *.swp
 *.swo
+dist/
+build/
+*.egg-info/

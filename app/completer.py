@@ -3,8 +3,8 @@ import glob
 import shlex
 import subprocess
 import readline
-from builtin import BUILTIN_CMDS, CUSTOM_COMPLETERS
 import re
+from .builtin import BUILTIN_CMDS, CUSTOM_COMPLETERS
 
 _PATH_EXECUTABLES_CACHE = None
 

@@ -2,9 +2,9 @@ import shutil
 import subprocess
 import os
 import re
-from jobs import BACKGROUND_JOBS, get_next_job_id
-from variables import get_variable, set_variable, is_valid_var_name, expand_parameters
-from pipe import pipeline
+from .jobs import BACKGROUND_JOBS, get_next_job_id
+from .variables import get_variable, set_variable, is_valid_var_name, expand_parameters
+from .pipe import pipeline
 
 def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=None, stderr_mode="w"):
     background = False

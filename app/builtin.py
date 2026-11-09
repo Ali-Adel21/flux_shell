@@ -1,9 +1,9 @@
 import os 
 import sys
-from contextlib import redirect_stdout
 import readline
-from jobs import reap_jobs, BACKGROUND_JOBS
-from variables import set_variable, get_variable, is_valid_var_name, shell_vars
+from contextlib import redirect_stdout
+from .jobs import reap_jobs, BACKGROUND_JOBS
+from .variables import set_variable, get_variable, is_valid_var_name, shell_vars
 
 
 BUILTIN_CMDS = ["exit", "echo", "type", "pwd", "cd", "history", "complete", "jobs", "kill", "declare"]

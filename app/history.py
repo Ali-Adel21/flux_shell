@@ -1,7 +1,7 @@
 import os
 import readline
 
-history_file = os.path.expanduser("~/.shell_history")
+HISTORY_FILE = os.path.expanduser("~/.shell_history")
 
 def load_history():
     if os.path.exists(HISTORY_FILE):
