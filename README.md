@@ -56,7 +56,7 @@ graph TD
 1- **Clone the repository:**
 ```
 git clone https://github.com/Ali-Adel21/flux_shell.git
-cd flux-shell
+cd flyx-shell
 ```
 
 2- **Sync the environment:**
@@ -66,5 +66,5 @@ uv sync
 
 3- **Launch the shell:**
 ```
-uv run flux-shell
+uv run flyx-shell
 ```
