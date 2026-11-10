@@ -3,6 +3,7 @@ import sys
 import shlex
 import shutil
 from .variables import expand_parameters
+import signal
 
 def pipeline(command_string):
     op_split = command_string.split("|")
@@ -46,6 +47,7 @@ def pipeline(command_string):
         pid = os.fork()
 
         if pid == 0:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
             if i > 0:
                 read_fd, _ = pipes[i - 1]
                 os.dup2(read_fd, 0)

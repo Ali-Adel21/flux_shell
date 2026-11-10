@@ -5,6 +5,7 @@ import re
 from .jobs import BACKGROUND_JOBS, get_next_job_id
 from .variables import get_variable, set_variable, is_valid_var_name, expand_parameters
 from .pipe import pipeline
+import signal
 
 def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=None, stderr_mode="w"):
     background = False
@@ -32,7 +33,7 @@ def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=No
                     [executable_path] + args,
                     stdout = stdout_target,
                     stderr = stderr_target,
-                    preexec_fn=os.setsid
+                    preexec_fn=os.setsid,
                 )
                 job_id = get_next_job_id()
 
@@ -49,8 +50,12 @@ def handle_external(cmd, args, stdout_file=None, stdout_mode="w", stderr_file=No
                 stdout_target = None
                 stderr_target = None
             else:
-
-                subprocess.run([executable_path] + args, stdout=stdout_target, stderr=stderr_target)
+                subprocess.run(
+                    [executable_path] + args, 
+                    stdout=stdout_target, 
+                    stderr=stderr_target,
+                    preexec_fn=lambda: signal.signal(signal.SIGINT, signal.SIG_DFL)
+                )
             
         except Exception as e:
             print(f"{cmd}: {e}")
